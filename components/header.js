@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Home,
   Document,
@@ -17,9 +18,13 @@ import { useEffect, useState } from "react";
 import { redirect } from "next/navigation";
 
 export default function Header() {
+
   const [userName, setUsername] = useState("");
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+
+  const pathname = usePathname();
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -57,7 +62,7 @@ export default function Header() {
                 <Home className="icon" />
               </div>
               <div>
-                <Link href="/" className="link">
+                <Link href="/" className={`link ${pathname === '/' ? "active" : "not-active"}`}>
                   Home
                 </Link>
               </div>
@@ -69,8 +74,8 @@ export default function Header() {
                 <Document className="icon" />
               </div>
               <div>
-                <Link href="/apply" className="link">
-                  Apply for Permit
+                <Link href="/apply" className={`link ${pathname === '/apply' | '/apply/reviewform' ? "active" : "not-active"}`}>
+                  Licensing
                 </Link>
               </div>
             </div>
@@ -81,7 +86,7 @@ export default function Header() {
                 <SearchLocate className="icon" />
               </div>
               <div>
-                <Link href="/" className="link">
+                <Link href="/" className={`link ${pathname === '/search' ? "active" : "not-active"}`}>
                   Search Permits
                 </Link>
               </div>
@@ -93,7 +98,7 @@ export default function Header() {
                 <Result className="icon" />
               </div>
               <div>
-                <Link href="/dashboard" className="link">
+                <Link href="/dashboard" className={`link ${pathname === '/dashboard' ? "active" : "not-active"}`}>
                   Dashboard
                 </Link>
               </div>
@@ -105,7 +110,7 @@ export default function Header() {
                 <Information className="icon" />
               </div>
               <div>
-                <Link href="/" className="link">
+                <Link href="/" className={`link ${pathname === '/faq' ? "active" : "not-active"}`}>
                   FAQs & Notices
                 </Link>
               </div>
