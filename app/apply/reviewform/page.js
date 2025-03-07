@@ -29,7 +29,7 @@ export default function ReviewEditForm() {
               redirect: "follow"
             };
             
-            fetch("https://edb-mauritius-edb-3.apps.67a0a43af9f6659c21a114dd.am1.techzone.ibm.com/api/applicant", requestOptions)
+            fetch("https://edb-app-mauritius-edb-3.apps.67a0a43af9f6659c21a114dd.am1.techzone.ibm.com/api/applicant", requestOptions)
               .then((response) => response.json())
               .then((result) => setData(result
               ))
