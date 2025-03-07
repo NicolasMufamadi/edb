@@ -74,7 +74,7 @@ export default function Header() {
                 <Document className="icon" />
               </div>
               <div>
-                <Link href="/apply" className={`link ${pathname === '/apply' | '/apply/reviewform' ? "active" : "not-active"}`}>
+                <Link href="/apply" className={`link ${pathname === '/apply' || '/apply/reviewform' ? "active" : "not-active"}`}>
                   Licensing
                 </Link>
               </div>
