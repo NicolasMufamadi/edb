@@ -161,6 +161,7 @@ export default function Header() {
                 <div>
                   <div>
                     <Button
+                      className="btn"
                       kind="tertiary"
                       size="sm"
                       style={{
@@ -180,6 +181,7 @@ export default function Header() {
                 <div>
                   <div>
                     <Button
+                      className="btn"
                       kind="tertiary"
                       size="sm"
                       style={{

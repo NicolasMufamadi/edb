@@ -23,8 +23,8 @@ export default function Login() {
                     <PasswordInput id="password" type="password" labelText="Password" size="lg" placeholder="Password" style={{width: '350px'}}/>
                     <Link href='/reset' className="reset-link">Forgot Password</Link>
                     <div style={{display: "flex",justifyContent: 'center'}}>
-                        <Button kind="tertiary" style={{marginRight:  '2.25rem'}}>Cancel</Button>
-                        <Button renderIcon={ArrowRight} onClick={login}>Login</Button>
+                        <Button className="btn" kind="tertiary" style={{marginRight:  '2.25rem'}}>Cancel</Button>
+                        <Button className="btn" renderIcon={ArrowRight} onClick={login}>Login</Button>
                     </div>
                 </Stack>
             </FormGroup>

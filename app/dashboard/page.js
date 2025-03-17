@@ -55,7 +55,7 @@ export default function Dashboard() {
       date_modified: "2025-01/15 11:20:00.0",
       persona_type: 'Non Citizen',
       action: (
-        <Button size="sm" style={{ paddingRight: "10px" }}>
+        <Button className="btn" size="sm" style={{ paddingRight: "10px" }}>
           View Application
         </Button>
       ),
@@ -81,6 +81,7 @@ export default function Dashboard() {
         <p className="profile-email">jane.smith@xyz.com</p>
         <p className="profile-email">+27 67 123 5678</p>
         <Button
+          className="btn"
           size="sm"
           style={{ marginLeft: "6.5rem", paddingRight: "12px" }}
         >
@@ -118,6 +119,7 @@ export default function Dashboard() {
         </div>
         <hr className="line"></hr>
         <Button
+          className="btn"
           size="sm"
           style={{
             marginLeft: "6rem",

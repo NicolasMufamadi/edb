@@ -46,8 +46,8 @@ export default function Register () {
                     <TextInput labelText="Cellphone Number" />
             </FormGroup>
             <div style={{display: "flex",justifyContent: 'center',marginTop: "1.38rem"}}>
-                <Button kind="tertiary" style={{marginRight:  '2.25rem'}}>Cancel</Button>
-                <Button  renderIcon={ArrowRight} onClick={register}>Register</Button>
+                <Button className="btn" kind="tertiary" style={{marginRight:  '2.25rem'}}>Cancel</Button>
+                <Button className="btn" renderIcon={ArrowRight} onClick={register}>Register</Button>
             </div>
         </div>
     </div>

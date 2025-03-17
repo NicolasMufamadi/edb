@@ -286,17 +286,46 @@ align-items: flex-end;
     font-weight: 400;
     font-size: small;
 }
-.loader-container {
-    display: "flex";
-    flex-direction: "column";
-    align-items: "center";
-    justify-content: "center";
-    height: "100vh";
-  }
 
-.message{
-    margin-top: "5rem";
-    font-size: "16px";
-    font-weight: "bold";
+.ticketHeader{
+
+    color: #000;
+    font-family: var(--fixed-utility-legal-0102-font-family, "IBM Plex Sans");
+    font-size: 1.75rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 2.25rem; /* 128.571% */
     text-align: center;
+    margin-top: 2rem;
+
+}
+
+.ticket-note {
+    margin-top: 2rem;
+    margin-left: 9rem;
+    width: 23.625rem; 
+    height: 30rem;
+    flex-shrink: 0;
+    background: #F4F5FA;
+    box-shadow: 0px -4px 16px 4px rgba(15, 98, 254, 0.10), 0px 4px 16px 4px rgba(15, 98, 254, 0.10);
+}
+
+.autofill-text {
+    margin-top: 1rem;
+    color: var(--Text-text-primary, #161616);
+    text-align: center;
+    font-family: var(--Fixed-Body-Font-family, "IBM Plex Sans");
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.5rem; 
+    text-wrap: wrap;
+    margin-left: 5rem;
+    margin-bottom: 1rem;
+    margin-right: 3rem;
+}
+
+.form-container {
+    margin-left: 5.5rem;
+    margin-top: 3rem;
 }

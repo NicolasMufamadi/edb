@@ -14,7 +14,7 @@ export default function Home() {
               <p className="header">Welcome to the National Electronic</p>
               <p className="header">Licensing System of Mauritius</p>
             </div>
-            <Button className="btn1" kind="primary" size="lg" onClick={() =>  router.push('/apply')}>Apply for permit</Button>
+            <Button className="btn1 btn" kind="primary" size="lg" onClick={() =>  router.push('/apply')}>Apply for permit</Button>
           </div>
           <div className="right-side">
             <Image src="/landing.png" width={612} height={408} alt="Landing Image"/>
