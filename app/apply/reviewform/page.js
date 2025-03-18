@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/compat/router";
+import { useRouter } from "next/navigation";
 import {
   ProgressIndicator,
   ProgressStep,
@@ -23,7 +23,7 @@ import {
 export default function ReviewEditForm() {
   const [data, setData] = useState("");
   const [isChecked,setIsChecked] = useState(false)
-
+  const router = useRouter()
   const items = [
     {
       id: "option-0",
@@ -42,8 +42,9 @@ export default function ReviewEditForm() {
       const raw = "";
 
       const requestOptions = {
-        method: "GET",
-        redirect: "follow",
+        'method': "GET",
+        'redirect': "follow",
+        'Content-Type': "application/json"
       };
 
       fetch("/api/applicant", requestOptions)
@@ -56,7 +57,7 @@ export default function ReviewEditForm() {
     }
   }, []);
 
-  
+
   return (
     <>
       <h3
@@ -764,6 +765,21 @@ export default function ReviewEditForm() {
               </Button>
               )
             }
+          </div>
+          <div style={{display: 'flex'}}>
+            <Button 
+              className="btn" 
+              style={{display: 'flex', marginTop: '2rem'}}
+              onClick={() => router.push('/apply/autofill')}
+            >
+              Back
+            </Button>
+            <Button className="btn" style={{display: 'flex', marginTop: '2rem', marginLeft: '2rem'}}>
+              Save Progress
+            </Button>
+            <Button className="btn" style={{display: 'flex', marginTop: '2rem', marginLeft: '2rem'}} disabled>
+              Next
+            </Button>
           </div>
         </div>
       </div>
