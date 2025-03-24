@@ -1,62 +1,151 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import 'flatpickr/dist/flatpickr.min.css';
+import '@carbon/styles/css/styles.css';
 import {
   ProgressIndicator,
   ProgressStep,
   Button,
   Stack,
-  Form,
   FormGroup,
   TextInput,
-  Column,
-  Grid,
   RadioButtonGroup,
   RadioButton,
   Checkbox,
-  DatePicker,
-  DatePickerInput,
   Dropdown,
   TextArea,
 } from "@carbon/react";
 
 export default function ReviewEditForm() {
-  const [data, setData] = useState("");
+
+  const [data, setData] = useState({
+    NAME: "",
+    SURNAME: "",
+    OTHERNAMES: "",
+    DATEOFBIRTH: "",
+    PLACEOFBIRTH: "",
+    GENDER: "",
+    PASSPORTNO: "",
+    PERSONATYPE: "",
+    ISSUINGCOUNTRY: "",
+    DATEOFISSUE: "",
+    DATEOFEXPIRY: "",
+    JOBTITLE: "",
+    SALARY: "",
+    ID: "",
+    MAIDENNAME: "",
+    OTHERSTATUS: "",
+    PREVIOUSNAME: "",
+    TAXID: "",
+    SPECIALITY: "",
+    PROGRESS: "Draft"
+  });
   const [isChecked,setIsChecked] = useState(false)
   const router = useRouter()
-  const items = [
+
+  const [buttonValue, setButtonValue] = useState({
+    APPLICANTCATEGORY: "",
+    TRANSACTIONTYPE: "",
+    UNIQUEID: "",
+    GENDER: "",
+    MARITALSTATUS: "",
+    ANOTHERNATIONALITY: "",
+    RENOUNCENATIONALITY: "",
+    GOVERNMENTDOCS: "",
+    COUNTRYREENTRY: "",
+    RESIDENCENTRY: "",
+    CRIME: "",
+    CASE: "",
+    SUFFERING: ""
+  })
+
+  const sectors = [
+    {
+      id: 1,
+      name: "Creative Industry"
+    },
+    {
+      id: 2,
+      name: "Innovative Start-ups"
+    }
+  ]
+
+  const nations = [
     {
       id: "option-0",
-      text: "Option 0",
+      text: "South Africa",
     },
     {
       id: "option-1",
-      text: "Option 1",
+      text: "India",
     },
   ];
-  
-
 
   useEffect(() => {
+
+    if(typeof window !== 'undefined' &&  !window.localStorage.getItem("username")){
+      router.push('/login')
+    }
+
+    function fetchLocalStorageData(){
+      if(typeof window !== 'undefined' &&  window.localStorage.getItem("data")){
+        const storagedata = window.localStorage.getItem("data")
+        setData(JSON.parse(storagedata))
+      }
+      
+      if (typeof window !== 'undefined' &&  window.localStorage.getItem("buttonValue")){
+        const storagedata = window.localStorage.getItem("buttonValue")
+        setButtonValue(JSON.parse(storagedata))
+      }
+    }
+
     function fetchData() {
       const raw = "";
 
-      const requestOptions = {
-        'method': "GET",
-        'redirect': "follow",
-        'Content-Type': "application/json"
-      };
+      fetch("/api/applicant", {
+        method: 'GET',
+        redirect: 'follow'
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            return response.json(); // parse as JSON directly
+          } else {
+            throw new Error("Expected JSON, got: " + contentType);
+          }
+        })
+        .then((result) => {
+          setData(result[0]);   // Assuming result is an array
+        })
+        .catch((error) => console.error('Fetch error:', error));
+      }
 
-      fetch("/api/applicant", requestOptions)
-        .then((response) => response.json())
-        .then((result) => setData(result[0]))
-        .catch((error) => console.error(error));
-    }
     if(localStorage.getItem("Autofill") === 'Yes'){
       fetchData();
+    }else{
+      fetchLocalStorageData()
     }
+
   }, []);
 
+  
+  const handleChange = (e) => {
+    const updatedData = { ...data, [e.target.name]: e.target.value };
+    setData(updatedData);
+    localStorage.setItem("data", JSON.stringify(updatedData)); 
+  };
+
+  const handleRadioChange = (value, name) => {
+    const update = { ...buttonValue, [name]: value}
+    setButtonValue(update)
+    localStorage.setItem("buttonValue", JSON.stringify(update))
+  }
+
+  const downloadUnderTaking = async () => {
+    router.push('/apply/upload')
+  }
 
   return (
     <>
@@ -100,6 +189,9 @@ export default function ReviewEditForm() {
             <RadioButtonGroup
               helperText="Required*"
               legendText="Applicant's Category"
+              name="APPLICANTCATEGORY"
+              valueSelected={buttonValue.APPLICANTCATEGORY}
+              onChange={(value, name) => handleRadioChange(value, name)}
             >
               <RadioButton id="cat-1" labelText="Investor" value="Investor" />
               <RadioButton
@@ -118,6 +210,9 @@ export default function ReviewEditForm() {
             <RadioButtonGroup
               helperText="Required*"
               legendText="Transaction-Type"
+              name="TRANSACTIONTYPE"
+              valueSelected={buttonValue.TRANSACTIONTYPE}
+              onChange={(value, name) => handleRadioChange(value, name)}
             >
               <RadioButton labelText="New" value="New" />
               <RadioButton labelText="Renewal" value="Renewal" />
@@ -126,6 +221,9 @@ export default function ReviewEditForm() {
             <RadioButtonGroup
               helperText="Required*"
               legendText="Have a Unique Identification Card?"
+              name="UNIQUEID"
+              valueSelected={buttonValue ? buttonValue.UNIQUEID : ""}
+              onChange={(value, name) => handleRadioChange(value, name)}
             >
               <RadioButton labelText="Yes" value="Yes" />
               <RadioButton labelText="No" value="No" />
@@ -139,29 +237,37 @@ export default function ReviewEditForm() {
                   labelText="Unique Identification Number"
                   size="md"
                   helperText="Required"
+                  name="ID"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.ID: ""}
+                  onChange={handleChange}
                 />
                 <TextInput
+                  name="NAME"
                   labelText="Names"
                   size="md"
                   helperText="Required"
                   style={{ marginRight: "1.25rem", width: "250px" }}
                   value={data ? data.NAME: ""}
-                  onChange={(e) => setData({...data,NAME: e.target.value })}
+                  onChange={handleChange}
                 />
                 <TextInput
+                  name="SURNAME"
                   labelText="Surname"
                   size="md"
                   helperText="Required"
                   style={{ marginRight: "1.25rem", width: "250px" }}
                   value={data ? data.SURNAME: ""}
-                  onChange={(e) => setData({...data,SURNAME: e.target.value })}
+                  onChange={handleChange}
                 />
                 <TextInput
                   labelText="Other Names (If Any)"
                   size="md"
-                  helperText="Required"
+                  helperText="Optional"
+                  name="OTHERNAMES"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.OTHERNAMES: ""}
+                  onChange={handleChange}
                 />
               </FormGroup>
             </Stack>
@@ -173,42 +279,50 @@ export default function ReviewEditForm() {
                   labelText="Maiden Name (If Any)"
                   size="md"
                   helperText="Optional"
+                  name="MAIDENNAME"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.MAIDENNAME: ""}
+                  onChange={handleChange}
                 />
                 <TextInput
                   labelText="Previous Names (If Any)"
                   size="md"
                   helperText="Optional"
+                  name="PREVIOUSNAME"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.PREVIOUSNAME: ""}
+                  onChange={handleChange}
                 />
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Date Of Birth"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                    value={data ? data.DATEOFBIRTH: ""}
-                    onChange={(e) => setData({...data,DATEOFBIRTH: e.target.value })}
-                  />
-                </DatePicker>
+                <div style={{marginRight: "1.25rem"}}>
                 <TextInput
+                  name="DATEOFBIRTH"
+                  labelText="Date Of Birth"
+                  size="md"
+                  helperText="Required"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.DATEOFBIRTH: ""}
+                  onChange={handleChange}
+                />
+                </div>
+                <TextInput
+                  name="PLACEOFBIRTH"
                   labelText="Place Of Birth"
                   size="md"
                   helperText="Required"
                   style={{ marginRight: "1.25rem", width: "250px" }}
                   value={data ? data.PLACEOFBIRTH: ""}
-                  onChange={(e) => setData({...data,PLACEOFBIRTH: e.target.value })}
+                  onChange={handleChange}
                 />
               </FormGroup>
             </Stack>
           </div>
           <div style={{ display: "flex", marginTop: "1.5rem" }}>
             <RadioButtonGroup 
+              name="GENDER"
               helperText="Required*" 
               legendText="Gender" 
-              valueSelected={data.GENDER}
-              onChange={(e) => setData({...data,GENDER: e })}
+              valueSelected={buttonValue.GENDER}
+              onChange={(value, name) => handleRadioChange(value, name)}
             >
               <RadioButton labelText="Male" value="M" />
               <RadioButton labelText="Female" value="F" />
@@ -216,6 +330,8 @@ export default function ReviewEditForm() {
             <RadioButtonGroup
               helperText="Required*"
               legendText="Marital Status"
+              valueSelected={buttonValue.MARITALSTATUS}
+              onChange={(value, name) => handleRadioChange(value, name)}
             >
               <RadioButton labelText="Single" value="Single" />
               <RadioButton labelText="Married" value="Married" />
@@ -223,12 +339,18 @@ export default function ReviewEditForm() {
               <RadioButton labelText="Widowed" value="Widowed" />
               <RadioButton labelText="Other" value="Other" />
             </RadioButtonGroup>
+            <div style={{marginRight: '4rem'}}>
             <TextInput
               labelText="Other Names (If Any)"
               hideLabel
               size="md"
+              name="OTHERSTATUS"
               helperText="If other declare here"
+              style={{width: '250px'}}
+              value={data ? data.OTHERSTATUS: ""}
+              onChange={handleChange}
             />
+            </div>
           </div>
           <div style={{ display: "flex", marginTop: "1.5rem" }}>
             <Stack>
@@ -237,25 +359,37 @@ export default function ReviewEditForm() {
                   labelText="Tax Identification Number"
                   size="md"
                   helperText="Required"
+                  name="TAXID"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.TAXID: ""}
+                  onChange={handleChange}
                 />
                 <TextInput
                   labelText="Speciality"
                   size="md"
                   helperText="Required"
+                  name="SPECIALITY"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.SPECIALITY: ""}
+                  onChange={handleChange}
                 />
                 <TextInput
                   labelText="Job Title/Occupation"
                   size="md"
                   helperText="Required"
+                  name="JOBTITLE"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.JOBTITLE: ""}
+                  onChange={handleChange}
                 />
                 <TextInput
                   labelText="Monthly Salary (MUR)"
                   size="md"
                   helperText="Required"
+                  name="SALARY"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.SALARY: ""}
+                  onChange={handleChange}
                 />
               </FormGroup>
             </Stack>
@@ -268,8 +402,8 @@ export default function ReviewEditForm() {
                   label="Choose an option"
                   size="md"
                   helperText="Required"
-                  items={items}
-                  initialSelectedItem={items[0]}
+                  items={nations}
+                  initialSelectedItem={nations[1]}
                   itemToString={(item) => item ? item.text : ""}
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
@@ -277,29 +411,29 @@ export default function ReviewEditForm() {
                   helperText="Required*"
                   legendText="Do you have another Nationality?"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  valueSelected={buttonValue.ANOTHERNATIONALITY}
+                  onChange={(value, name) => handleRadioChange(value, name)}
                 >
                   <RadioButton labelText="Yes" value="Yes" />
                   <RadioButton labelText="No" value="No" />
                 </RadioButtonGroup>
                 <Dropdown
-                  titleText="Present Nationality"
+                  titleText="Aquired Nationality"
                   label="Choose an option"
                   size="md"
                   helperText="Required"
-                  items={items}
-                  initialSelectedItem={items[0]}
+                  items={nations}
+                  initialSelectedItem=""
                   itemToString={(item) => item ? item.text : ""}
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Acquisition Date"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                  />
-                </DatePicker>
+                <TextInput
+                  labelText="AquisitionDate"
+                  size="md"
+                  helperText="Required"
+                  name="AquisitionDate"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                />
               </FormGroup>
             </Stack>
           </div>
@@ -310,23 +444,22 @@ export default function ReviewEditForm() {
                   helperText="Required*"
                   legendText="Have you renounce your Nationality?"
                   style={{ marginRight: "1.25rem", width: "250px" }}
+                  valueSelected={buttonValue.RENOUNCENATIONALITY}
+                  onChange={(value, name) => handleRadioChange(value, name)}
                 >
                   <RadioButton labelText="Yes" value="Yes" />
                   <RadioButton labelText="No" value="No" />
                 </RadioButtonGroup>
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Renounce Date"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                  />
-                </DatePicker>
+                <div style={{marginRight: "1.25rem"}}>
+                <TextInput
+                  labelText="Renounce Date"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                />
+                </div>
                 <TextInput
                   labelText="Why did you renounce?"
                   helperText="Required if yes*"
-                  style={{ marginRight: "1.25rem", width: "400px" }}
+                  style={{ marginRight: "1.25rem", width: "520px" }}
                 />
               </FormGroup>
             </Stack>
@@ -334,22 +467,23 @@ export default function ReviewEditForm() {
           <div style={{marginTop: '1rem'}}>
             <TextArea 
                 labelText="Any Additional Information You Wish To Bring To The Attention Of The Occupation Permit Unit?"
+                style={{width: '1060px'}}
             />
           </div>
         </div>
         <div className="form-container">
-          <h6 style={{marginTop: '1.5rem'}}>Applicant’s Personal Details</h6>
+          <h6 style={{marginTop: '1.5rem'}}>Applicant’s Contact Details</h6>
           <div style={{display: 'flex', marginTop: '1rem'}}>
             <FormGroup style={{display: 'flex'}}>
               <TextInput 
                 labelText="Residential Address in Mauritius"
                 helperText="Optional"
-                style={{width: '740px',marginRight: '1.5rem'}}
+                style={{width: '780px',marginRight: '1.5rem'}}
               />
               <TextInput 
                 labelText="City"
                 helperText="Optional"
-                style={{width: '300px'}}
+                style={{width: '250px'}}
               />
             </FormGroup>
           </div>
@@ -388,12 +522,12 @@ export default function ReviewEditForm() {
               <TextInput 
                 labelText="Residential Address in Country of Origin"
                 helperText="Required"
-                style={{width: '740px',marginRight: '1.5rem'}}
+                style={{width: '790px',marginRight: '1.5rem'}}
               />
               <TextInput 
                 labelText="City"
                 helperText="Required"
-                style={{width: '300px'}}
+                style={{width: '250px'}}
               />
             </FormGroup>
           </div>
@@ -405,8 +539,8 @@ export default function ReviewEditForm() {
                     label="Choose an option"
                     size="md"
                     helperText="Required"
-                    items={items}
-                    initialSelectedItem={items[0]}
+                    items={nations}
+                    initialSelectedItem={nations[0]}
                     itemToString={(item) => item ? item.text : ""}
                     style={{ marginRight: "1.25rem", width: "250px" }}
                   />
@@ -436,29 +570,29 @@ export default function ReviewEditForm() {
                   label="Choose an option"
                   size="md"
                   helperText="Required"
-                  items={items}
-                  initialSelectedItem={items[0]}
+                  items={nations}
+                  initialSelectedItem={nations[1]}
                   itemToString={(item) => item ? item.text : ""}
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Date of Issue"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                  />
-                </DatePicker>
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Date of Expiry"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                  />
-                </DatePicker>
+                <div style={{marginRight: "1.25rem"}}>
+                <TextInput
+                  labelText="Date Of Issue"
+                  helperText="Required"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.DATEOFISSUE : ""}
+                  onChange={handleChange}
+                />
+                </div>
+                <div style={{marginRight: "1.25rem"}}>
+                <TextInput
+                  labelText="Date Of Expiry"
+                  helperText="Required*"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                  value={data ? data.DATEOFEXPIRY : ""}
+                  onChange={handleChange}
+                />
+                </div>
               </FormGroup>
             </Stack>
           </div>
@@ -476,46 +610,46 @@ export default function ReviewEditForm() {
           </div>
           <div style={{marginTop: '1rem'}}>
           <FormGroup style={{display: 'flex'}}>
+
+            <div style={{marginRight: "1rem"}}>
+            <TextInput
+                  labelText="Date Of Entry"
+                  size="md"
+                  helperText="Required"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                />
+            </div>
+            <div style={{marginRight: '1.5rem'}}>
+            <TextInput
+                  labelText="Date Of Expiry Right"
+                  size="md"
+                  helperText="Required"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                />
+            </div>
             <RadioButtonGroup
               helperText="Required*"
               legendText="Do you hold the right of re-entry into your country?"
-              style={{ marginRight: "1.25rem" }}
+              style={{ marginRight: "1.25rem", width: '250px' }}
             >
               <RadioButton labelText="Yes" value="Yes" />
               <RadioButton labelText="No" value="No" />
             </RadioButtonGroup>
-            <DatePicker type="single">
-              <DatePickerInput
-                placeholder="mm/dd/yyyy"
-                labelText="Date of Expiry right"
-                size="md"
-                helperText="Required"
-                style={{ marginRight: "1.25rem", width: "250px" }}
-              />
-            </DatePicker>
             <RadioButtonGroup
               helperText="Required*"
               legendText="Do you hold the right of re-entry into your last place of residence?"
-              style={{ marginRight: "1.25rem" }}
+              style={{width: '250px'}}
             >
               <RadioButton labelText="Yes" value="Yes" />
               <RadioButton labelText="No" value="No" />
             </RadioButtonGroup>
-            <DatePicker type="single">
-              <DatePickerInput
-                placeholder="mm/dd/yyyy"
-                labelText="Date of Expiry right"
-                size="md"
-                helperText="Required"
-                style={{ marginRight: "1.25rem", width: "250px" }}
-              />
-            </DatePicker>
           </FormGroup>
           </div>
           <div style={{marginTop: '1.5rem'}}>
           <TextArea 
             labelText="If No to any of the above, please give details" 
             helperText="Optional"
+            style={{width: '1100px'}}
           />
           </div>
         </div>
@@ -548,6 +682,7 @@ export default function ReviewEditForm() {
             <TextArea 
               labelText="If the reply to any of the above is Yes, please give full details below and attach relevant documents in the Upload Documents tab (Security / Health Area)"
               helperText="Optional"
+              style={{width: '1100px'}}
             />
           </div>
         </div>
@@ -587,15 +722,14 @@ export default function ReviewEditForm() {
                   helperText="Required"
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Date of Incorporation / Registration"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                 />
-               </DatePicker>
+                <div style={{marginRight: "1.25rem"}}>
+                <TextInput
+                  labelText="Date Of Incorporation"
+                  size="md"
+                  helperText="Required"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                />
+               </div>
                 <TextInput
                   labelText="Name of Company"
                   size="md"
@@ -606,29 +740,36 @@ export default function ReviewEditForm() {
             </Stack>
           </div>
           <div style={{marginTop: '1rem'}}>
-            <FormGroup style={{display:  'flex', justifyContent: 'space-around'}}>
+            <FormGroup style={{display:  'flex'}}>
+              <div>
               <TextInput 
                 labelText="Business Name"
                 size="md"
                 helperText="Required*"
                 style={{width: '250px'}}
               />
+              </div>
+              <div style={{marginLeft: '2rem'}}>
               <TextInput
                 labelText="General Nature of Activities"
                 helperText="Required*"
+                style={{width: '815px'}}
               />
+              </div>
             </FormGroup>
           </div>
           <div style={{marginTop: '1rem'}}>
           <TextArea 
             labelText="Address of Principal Place of Business"
             helperText="Required*"
+            style={{width: '1100px'}}
             />
             </div>
           <div style={{marginTop: '1rem'}}>
           <TextArea 
             labelText="Address for Correspondence"
             helperText="Required*"
+            style={{width: '1100px'}}
           />
           </div>
           <div style={{ marginTop: "1.5rem" }}>
@@ -640,15 +781,14 @@ export default function ReviewEditForm() {
                   helperText="Required"
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
-                <DatePicker type="single">
-                  <DatePickerInput
-                    placeholder="mm/dd/yyyy"
-                    labelText="Date/ Approved Date for Start of Business"
-                    size="md"
-                    helperText="Required"
-                    style={{ marginRight: "1.25rem", width: "250px" }}
-                 />
-               </DatePicker>
+                <div style={{marginRight: "1.25rem"}}>
+                <TextInput
+                  labelText="Date/Approved Date for Business Start"
+                  size="md"
+                  helperText="Required"
+                  style={{ marginRight: "1.25rem", width: "250px" }}
+                />
+               </div>
                 <TextInput
                   labelText="Other Phone Number"
                   size="md"
@@ -684,8 +824,8 @@ export default function ReviewEditForm() {
                   label="Choose an option"
                   size="md"
                   helperText="Required"
-                  items={items}
-                  initialSelectedItem={items[0]}
+                  items={sectors}
+                  initialSelectedItem={sectors[0]}
                   itemToString={(item) => item ? item.text : ""}
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
@@ -694,8 +834,8 @@ export default function ReviewEditForm() {
                   label="Choose an option"
                   size="md"
                   helperText="Required"
-                  items={items}
-                  initialSelectedItem={items[0]}
+                  items={sectors}
+                  initialSelectedItem={sectors[0]}
                   itemToString={(item) => item ? item.text : ""}
                   style={{ marginRight: "1.25rem", width: "250px" }}
                 />
@@ -705,18 +845,22 @@ export default function ReviewEditForm() {
           <div style={{ marginTop: "1.5rem" }}>
             <Stack>
               <FormGroup style={{ display: "flex" }}>
+                <div>
                 <TextInput
                   labelText="Workforce at the time of Application for Local"
                   size="md"
                   helperText="Required"
-                  style={{ marginRight: "1.25rem"}}
+                  style={{ marginRight: "1.25rem", width: '550px'}}
                 />
+                </div>
+                <div style={{marginLeft: '1.5rem'}}>
                 <TextInput
                   labelText="Workforce at the time of Application for Expatriates"
                   size="md"
                   helperText="Required"
-                  style={{ marginRight: "1.25rem"}}
+                  style={{ width: '520px'}}
                 />
+                </div>
               </FormGroup>
             </Stack>
           </div>
@@ -735,23 +879,13 @@ export default function ReviewEditForm() {
             onChange={() => setIsChecked(!isChecked)}
           />
           </div>
-          <div style={{marginTop: '1rem',marginLeft: "40%"}}>
-          <DatePicker type="single">
-            <DatePickerInput
-              placeholder="mm/dd/yyyy"
-              labelText="Date agreed on"
-              size="md"
-              id="date-picker-single"
-              
-            />
-          </DatePicker>
-          </div>
           <div style={{display: 'flex', justifyContent: 'center',marginTop: '3rem'}}>
             {
               isChecked ? (
                 <Button 
                 className="btn"
                 size="lg" 
+                onClick={downloadUnderTaking}
               >
                 Download Undertaking form
               </Button>
@@ -773,12 +907,6 @@ export default function ReviewEditForm() {
               onClick={() => router.push('/apply/autofill')}
             >
               Back
-            </Button>
-            <Button className="btn" style={{display: 'flex', marginTop: '2rem', marginLeft: '2rem'}}>
-              Save Progress
-            </Button>
-            <Button className="btn" style={{display: 'flex', marginTop: '2rem', marginLeft: '2rem'}} disabled>
-              Next
             </Button>
           </div>
         </div>

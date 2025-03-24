@@ -36,7 +36,7 @@ export default function ApplyPermit() {
         }}
       >
         <ProgressIndicator spaceEqually style={{ width: "85%" }}>
-          <ProgressStep current label="Upload Files" />
+          <ProgressStep complete label="Upload Files" />
           <ProgressStep current label="Auto Fill Form" />
           <ProgressStep label="Review and Edit Form" />
           <ProgressStep label="Upload Signed Documents" />
@@ -79,7 +79,7 @@ export default function ApplyPermit() {
                 className="btn"
                 kind="primary"
                 size="lg"
-                style={{paddingRight: '1.5rem'}}
+                style={{paddingRight: '1.5rem',borderRadius: '5px'}}
                 onClick={handleAutofillClick}
             >
                 Submit

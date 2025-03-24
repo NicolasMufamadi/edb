@@ -18,6 +18,7 @@ export default function UploadUnderTaking() {
   const [isActive, setIsActive] = useState(false);
   const [file, setFile] = useState("");
   const [disabled, setDisabled] = useState(true)
+  const router = useRouter()
 
   const handleOnFileChange = (e) => {
     setFile(e.target.files[0])
@@ -53,7 +54,7 @@ export default function UploadUnderTaking() {
         }}
       >
         <ProgressIndicator spaceEqually style={{ width: "85%" }}>
-          <ProgressStep current label="Upload Files" />
+          <ProgressStep complete label="Upload Files" />
           <ProgressStep complete label="Auto Fill Form" />
           <ProgressStep complete label="Review and Edit Form" />
           <ProgressStep current label="Upload Signed Documents" />
@@ -73,7 +74,7 @@ export default function UploadUnderTaking() {
           Max file size is 500kb. Supported file types are .jpg and .png.
         </p>
         <FileUploaderDropContainer
-          accept={["image/jpeg", "image/png"]}
+          accept={["docx"]}
           innerRef={{
             current: "[Circular]",
           }}
@@ -100,6 +101,7 @@ export default function UploadUnderTaking() {
            size="lg"  
            renderIcon={CloudUpload}
            disabled={disabled}
+           onClick={() => router.push('/apply/submit')}
         >
             Submit
         </Button>
